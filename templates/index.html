@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Insurance Fraud Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+<div class="page">
+
+    <header class="header">
+        <div>
+            <div class="eyebrow">AI-POWERED CLAIM ANALYSIS</div>
+            <h1>Vehicle Insurance Fraud Detection</h1>
+            <p>DINOv2 + EfficientNet-B0 + ConvNeXt-Tiny</p>
+        </div>
+        <div class="status-pill">
+            <span class="status-dot"></span>
+            AI Analysis Ready
+        </div>
+    </header>
+
+    <main class="dashboard">
+
+        <!-- LEFT PANEL -->
+        <section class="panel left-panel">
+
+            <div class="section-heading">
+                <div>
+                    <span class="section-number">01</span>
+                    <h2>Vehicle Image Analysis</h2>
+                </div>
+            </div>
+
+            <form id="uploadForm">
+
+                <div class="upload-box" id="uploadBox">
+                    <input
+                        type="file"
+                        id="image"
+                        name="image"
+                        accept="image/jpeg,image/jpg,image/png,image/webp,image/bmp"
+                        required
+                    >
+
+                    <label for="image">
+                        <span class="upload-icon">+</span>
+                        <strong>Upload Vehicle Image</strong>
+                        <small>JPG, PNG, WEBP or BMP · Max 20 MB</small>
+                    </label>
+                </div>
+
+                <div id="previewContainer" class="image-card" style="display:none;">
+                    <div class="image-card-header">
+                        <span>Uploaded Image</span>
+                        <span id="filename" class="filename"></span>
+                    </div>
+                    <img id="preview" alt="Uploaded vehicle image">
+                </div>
+
+                <button type="submit" id="predictButton">
+                    Analyze Vehicle
+                </button>
+            </form>
+
+            <div id="loading" class="loading" style="display:none;">
+                <span class="spinner"></span>
+                <span>Analyzing vehicle image with all models...</span>
+            </div>
+
+            <div id="error" class="error" style="display:none;"></div>
+
+            <!-- FINAL RESULT -->
+            <div id="result" class="result" style="display:none;">
+
+                <div class="result-heading">
+                    <span class="section-number">02</span>
+                    <h2>Detection Result</h2>
+                </div>
+
+                <div id="resultBadge" class="result-badge">
+                    <span id="resultIcon">!</span>
+                    <div>
+                        <span class="result-caption">FINAL CLASSIFICATION</span>
+                        <strong id="resultTitle">—</strong>
+                    </div>
+                </div>
+
+                <div class="score-grid">
+                    <div class="score-card">
+                        <span>Fraud Risk Score</span>
+                        <strong id="fraudScore">0%</strong>
+                        <small id="riskLevel">Risk Level: —</small>
+                    </div>
+
+                    <div class="score-card trust-card">
+                        <span>Trust Score</span>
+                        <strong id="trustScore">0%</strong>
+                        <small>Confidence in final decision</small>
+                    </div>
+                </div>
+
+                <div class="threshold-row">
+                    <span>Decision threshold</span>
+                    <strong id="threshold">0%</strong>
+                </div>
+
+
+            </div>
+        </section>
+
+
+        <!-- RIGHT PANEL -->
+        <aside class="panel right-panel">
+
+            <div class="section-heading">
+                <div>
+                    <span class="section-number">03</span>
+                    <h2>Individual Model Performance</h2>
+                </div>
+            </div>
+
+            <p class="panel-description">
+                Model scores for this particular vehicle image.
+            </p>
+
+            <div class="model-list">
+
+                <div class="model-card">
+                    <div class="model-top">
+                        <div class="model-info">
+                            <span class="model-badge dino">D</span>
+                            <div>
+                                <strong>DINOv2</strong>
+                                <small>+ Logistic Regression</small>
+                            </div>
+                        </div>
+                        <strong id="dinoProbability" class="model-score">0%</strong>
+                    </div>
+
+                    <div class="bar">
+                        <div id="dinoBar" class="bar-fill"></div>
+                    </div>
+
+                    <div class="model-bottom">
+                        <span>Fraud probability</span>
+                        <strong id="dinoRank">Rank: 0%</strong>
+                    </div>
+                </div>
+
+
+                <div class="model-card">
+                    <div class="model-top">
+                        <div class="model-info">
+                            <span class="model-badge eff">E</span>
+                            <div>
+                                <strong>EfficientNet-B0</strong>
+                                <small>Image classifier</small>
+                            </div>
+                        </div>
+                        <strong id="effProbability" class="model-score">0%</strong>
+                    </div>
+
+                    <div class="bar">
+                        <div id="effBar" class="bar-fill"></div>
+                    </div>
+
+                    <div class="model-bottom">
+                        <span>Fraud probability</span>
+                        <strong id="effRank">Rank: 0%</strong>
+                    </div>
+                </div>
+
+
+                <div class="model-card">
+                    <div class="model-top">
+                        <div class="model-info">
+                            <span class="model-badge conv">C</span>
+                            <div>
+                                <strong>ConvNeXt-Tiny</strong>
+                                <small>Image classifier</small>
+                            </div>
+                        </div>
+                        <strong id="convProbability" class="model-score">0%</strong>
+                    </div>
+
+                    <div class="bar">
+                        <div id="convBar" class="bar-fill"></div>
+                    </div>
+
+                    <div class="model-bottom">
+                        <span>Fraud probability</span>
+                        <strong id="convRank">Rank: 0%</strong>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="ensemble-card">
+                <div class="ensemble-header">
+                    <div>
+                        <span>ENSEMBLE DECISION</span>
+                        <h3>Weighted Rank Averaging</h3>
+                    </div>
+                    <strong id="ensembleScore">0.0000</strong>
+                </div>
+
+                <div class="weights">
+                    <div><span>DINOv2</span><strong id="dinoWeight">25%</strong></div>
+                    <div><span>EfficientNet-B0</span><strong id="effWeight">30%</strong></div>
+                    <div><span>ConvNeXt-Tiny</span><strong id="convWeight">45%</strong></div>
+                </div>
+            </div>
+
+        </aside>
+    </main>
+</div>
+
+<script>
+const form = document.getElementById("uploadForm");
+const imageInput = document.getElementById("image");
+const preview = document.getElementById("preview");
+const previewContainer = document.getElementById("previewContainer");
+const filename = document.getElementById("filename");
+const loading = document.getElementById("loading");
+const result = document.getElementById("result");
+const error = document.getElementById("error");
+const button = document.getElementById("predictButton");
+
+imageInput.addEventListener("change", function () {
+    const file = this.files[0];
+
+    if (!file) {
+        previewContainer.style.display = "none";
+        preview.removeAttribute("src");
+        return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+        showError("Please select a valid image file.");
+        previewContainer.style.display = "none";
+        return;
+    }
+
+    error.style.display = "none";
+    filename.textContent = file.name;
+
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+        preview.src = event.target.result;
+        previewContainer.style.display = "block";
+    };
+
+    reader.readAsDataURL(file);
+});
+
+
+form.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    error.style.display = "none";
+    result.style.display = "none";
+
+    const file = imageInput.files[0];
+
+    if (!file) {
+        showError("Please select a vehicle image.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    loading.style.display = "flex";
+    button.disabled = true;
+    button.textContent = "Analyzing...";
+
+    try {
+        const response = await fetch("/predict", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || "Prediction failed.");
+        }
+
+        displayResult(data);
+
+    } catch (err) {
+        console.error("Prediction error:", err);
+        showError(err.message || "Something went wrong while processing the image.");
+
+    } finally {
+        loading.style.display = "none";
+        button.disabled = false;
+        button.textContent = "Analyze Vehicle";
+    }
+});
+
+
+function displayResult(data) {
+    result.style.display = "block";
+
+    const prediction = data.prediction;
+    const riskPercentage = Number(data.risk_percentage || 0);
+    const riskLevel = data.risk_level || "UNKNOWN";
+    const threshold = Number(data.threshold || 0);
+    const ensembleScore = Number(data.ensemble_score || 0);
+
+    const trustScore = prediction === "FRAUD"
+        ? riskPercentage
+        : 100 - riskPercentage;
+
+    const title = document.getElementById("resultTitle");
+    const badge = document.getElementById("resultBadge");
+    const icon = document.getElementById("resultIcon");
+
+    if (prediction === "FRAUD") {
+        title.textContent = "FRAUD DETECTED - HUMAN VERIFICATION REQUIRED";
+        badge.className = "result-badge fraud";
+        icon.textContent = "!";
+    } else {
+        title.textContent = "NON-FRAUD DETECTED";
+        badge.className = "result-badge safe";
+        icon.textContent = "✓";
+    }
+
+    document.getElementById("fraudScore").textContent =
+        riskPercentage.toFixed(1) + "%";
+
+    document.getElementById("trustScore").textContent =
+        trustScore.toFixed(1) + "%";
+
+    document.getElementById("riskLevel").textContent =
+        "Risk Level: " + riskLevel;
+
+    document.getElementById("threshold").textContent =
+        (threshold * 100).toFixed(1) + "%";
+
+    document.getElementById("ensembleScore").textContent =
+        ensembleScore.toFixed(4);
+
+
+    const models = data.models || {};
+
+    const dinoProbability =
+        Number(models["DINOv2 + Logistic Regression"] || 0);
+
+    const efficientnetProbability =
+        Number(models["EfficientNet-B0"] || 0);
+
+    const convnextProbability =
+        Number(models["ConvNeXt-Tiny"] || 0);
+
+
+    setModel(
+        "dinoProbability",
+        "dinoBar",
+        dinoProbability
+    );
+
+    setModel(
+        "effProbability",
+        "effBar",
+        efficientnetProbability
+    );
+
+    setModel(
+        "convProbability",
+        "convBar",
+        convnextProbability
+    );
+
+
+    const rankScores = data.rank_scores || {};
+
+    document.getElementById("dinoRank").textContent =
+        "Rank: " + (Number(rankScores["DINOv2"] || 0) * 100).toFixed(1) + "%";
+
+    document.getElementById("effRank").textContent =
+        "Rank: " + (Number(rankScores["EfficientNet-B0"] || 0) * 100).toFixed(1) + "%";
+
+    document.getElementById("convRank").textContent =
+        "Rank: " + (Number(rankScores["ConvNeXt-Tiny"] || 0) * 100).toFixed(1) + "%";
+
+
+    const weights = data.weights || {};
+
+    document.getElementById("dinoWeight").textContent =
+        (Number(weights["DINOv2"] || 0) * 100).toFixed(0) + "%";
+
+    document.getElementById("effWeight").textContent =
+        (Number(weights["EfficientNet-B0"] || 0) * 100).toFixed(0) + "%";
+
+    document.getElementById("convWeight").textContent =
+        (Number(weights["ConvNeXt-Tiny"] || 0) * 100).toFixed(0) + "%";
+
+    result.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest"
+    });
+}
+
+
+function setModel(valueId, barId, value) {
+    const safeValue = Math.max(0, Math.min(100, value));
+
+    document.getElementById(valueId).textContent =
+        safeValue.toFixed(1) + "%";
+
+    document.getElementById(barId).style.width =
+        safeValue + "%";
+}
+
+
+function showError(message) {
+    error.textContent = message;
+    error.style.display = "block";
+}
+</script>
+
+</body>
+</html>

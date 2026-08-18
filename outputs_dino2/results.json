@@ -1,0 +1,37 @@
+{
+    "models": [
+        "DINOv2 + Logistic Regression",
+        "EfficientNet-B0",
+        "ConvNeXt-T"
+    ],
+    "ensemble": "Weighted Rank Averaging",
+    "dino_weight": 0.25,
+    "efficientnet_weight": 0.3,
+    "convnext_weight": 0.45,
+    "threshold_method": "Validation F2 Optimization",
+    "threshold": 0.88,
+    "validation_accuracy": 0.9884615384615385,
+    "validation_precision": 0.8043478260869565,
+    "validation_recall": 0.925,
+    "validation_f1": 0.8604651162790697,
+    "validation_f2": 0.8980582524271845,
+    "validation_pr_auc": 0.9296417830547323,
+    "validation_roc_auc": 0.989225,
+    "test_accuracy": 0.9851694915254238,
+    "test_precision": 0.8913043478260869,
+    "test_recall": 0.8817204301075269,
+    "test_f1": 0.8864864864864865,
+    "test_f2": 0.8836206896551724,
+    "test_pr_auc": 0.9285558252012227,
+    "test_roc_auc": 0.9814530352164761,
+    "confusion_matrix": [
+        [
+            1313,
+            10
+        ],
+        [
+            11,
+            82
+        ]
+    ]
+}

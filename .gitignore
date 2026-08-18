@@ -1,0 +1,11 @@
+# Large ML model files
+*.pth
+*.pt
+*.ckpt
+
+# Generated files
+outputs_dino2/*.npz
+outputs_dino2/*.pkl
+
+# Generated heatmaps
+static/heatmaps/*.jpg
