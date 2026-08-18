@@ -1,0 +1,10 @@
+Flask
+gunicorn
+numpy
+pandas
+scikit-learn
+joblib
+Pillow
+torch
+torchvision
+huggingface_hub
